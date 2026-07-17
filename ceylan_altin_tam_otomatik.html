@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <title>CEYLAN ALTIN — Canlı Döviz ve Altın Hesaplama</title>
+  <meta name="description" content="Güncel döviz ve uluslararası spot altın verileriyle gram, 22 ayar, çeyrek, yarım, tam, Ata ve diğer altın türlerini hesaplayın.">
+  <style>
+    :root{
+      --bg:#06101c;--card:#0d1b2c;--card2:#11243a;--line:rgba(255,255,255,.10);
+      --text:#f6f9fd;--muted:#9cafc3;--gold:#f2c45f;--mint:#37d6bd;--blue:#69aefc;
+      --red:#fb7185;--shadow:0 28px 75px rgba(0,0,0,.38)
+    }
+    *{box-sizing:border-box}html{scroll-behavior:smooth}
+    body{margin:0;min-height:100vh;font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--text);
+      background:radial-gradient(circle at 10% 0,rgba(55,214,189,.13),transparent 28%),
+      radial-gradient(circle at 92% 4%,rgba(242,196,95,.13),transparent 24%),
+      linear-gradient(145deg,#040911,#071422 48%,#0b1e32)}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.55;
+      background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:46px 46px}
+    button,input,select{font:inherit}.wrap{width:min(1180px,calc(100% - 28px));margin:auto}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:20px 0}
+    .brand{display:flex;align-items:center;gap:11px;font-weight:900;font-size:21px;letter-spacing:-.5px}
+    .logo{width:43px;height:43px;display:grid;place-items:center;border-radius:14px;color:#102019;
+      background:linear-gradient(135deg,var(--gold),var(--mint));box-shadow:0 12px 32px rgba(242,196,95,.2)}
+    .status{display:flex;align-items:center;gap:9px;padding:9px 13px;border:1px solid var(--line);
+      border-radius:999px;background:rgba(255,255,255,.04);color:var(--muted);font-size:12px}
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 6px rgba(55,214,189,.1)}
+    .dot.warn{background:var(--gold)}.dot.bad{background:var(--red)}
+    .hero{text-align:center;padding:55px 0 30px}.badge{display:inline-flex;padding:8px 12px;border-radius:999px;
+      color:#ffeab0;border:1px solid rgba(242,196,95,.24);background:rgba(242,196,95,.07);font-size:13px;font-weight:700}
+    h1{max-width:900px;margin:19px auto 14px;font-size:clamp(40px,7vw,72px);line-height:1.02;letter-spacing:-3px}
+    .grad{color:transparent;background:linear-gradient(90deg,#f8d77d,#76eadb 52%,#82baff);
+      background-clip:text;-webkit-background-clip:text}
+    .hero p{max-width:760px;margin:auto;color:var(--muted);line-height:1.75}
+    .market{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:30px auto 0}
+    .ticker{padding:16px;border:1px solid var(--line);border-radius:17px;background:rgba(255,255,255,.038);text-align:left}
+    .ticker span{color:var(--muted);font-size:12px}.ticker strong{display:block;margin-top:7px;font-size:18px}.ticker small{color:#7890a8}
+    .app{margin:18px 0 30px;padding:10px;border:1px solid var(--line);border-radius:29px;
+      background:rgba(255,255,255,.025);box-shadow:var(--shadow);backdrop-filter:blur(18px)}
+    .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:5px;border-radius:19px;background:rgba(0,0,0,.18)}
+    .tab{padding:15px;border:0;border-radius:14px;color:var(--muted);background:transparent;font-weight:800;cursor:pointer}
+    .tab.active{color:white;background:linear-gradient(135deg,rgba(55,214,189,.19),rgba(105,174,252,.13));
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+    .panel{display:none;padding:27px}.panel.active{display:block}.grid{display:grid;grid-template-columns:1.03fr .97fr;gap:21px}
+    .card,.result{padding:23px;border:1px solid var(--line);border-radius:21px;background:rgba(13,27,44,.88)}
+    h2{margin:0 0 7px;font-size:23px;letter-spacing:-.5px}.intro{margin:0 0 22px;color:var(--muted);font-size:13px;line-height:1.6}
+    label{display:block;margin-bottom:8px;color:#c9d5e2;font-size:13px;font-weight:700}.field{margin-bottom:16px}
+    input,select{width:100%;min-height:54px;padding:0 14px;border:1px solid var(--line);border-radius:14px;
+      color:white;background:rgba(255,255,255,.055);outline:none}
+    option{color:#111827}input:focus,select:focus{border-color:rgba(55,214,189,.55);box-shadow:0 0 0 4px rgba(55,214,189,.09)}
+    .row{display:grid;grid-template-columns:1fr 58px 1fr;gap:11px;align-items:end}
+    .swap{min-height:54px;border:1px solid var(--line);border-radius:14px;color:white;background:rgba(255,255,255,.06);cursor:pointer;font-size:21px}
+    .btn{width:100%;min-height:56px;border:0;border-radius:15px;color:#06101c;font-weight:900;cursor:pointer;
+      background:linear-gradient(135deg,var(--mint),#8bd9ff);box-shadow:0 16px 35px rgba(55,214,189,.15)}
+    .btn.gold{background:linear-gradient(135deg,var(--gold),#fde68a)}.btn:disabled{opacity:.6;cursor:wait}
+    .result{min-height:330px;display:flex;flex-direction:column;justify-content:center;
+      background:radial-gradient(circle at 88% 12%,rgba(55,214,189,.12),transparent 28%),rgba(13,27,44,.78)}
+    .result.goldbg{background:radial-gradient(circle at 88% 12%,rgba(242,196,95,.15),transparent 29%),rgba(13,27,44,.78)}
+    .rlabel{color:var(--muted);font-size:13px}.rnum{margin:10px 0;font-weight:900;font-size:clamp(31px,5vw,50px);
+      line-height:1.08;letter-spacing:-1.7px;overflow-wrap:anywhere}.detail{color:#bdcada;font-size:13px;line-height:1.72}
+    .note{margin-top:19px;padding:13px;border:1px solid var(--line);border-radius:13px;background:rgba(0,0,0,.15);
+      color:#b7c6d7;font-size:12px;line-height:1.58}
+    .catalog{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:21px}
+    .item{padding:16px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.035);cursor:pointer;transition:.2s}
+    .item:hover{transform:translateY(-3px);border-color:rgba(242,196,95,.37);background:rgba(242,196,95,.06)}
+    .item b{display:block;margin-bottom:7px;font-size:14px}.item span{color:var(--muted);font-size:11px;line-height:1.5}
+    .tools{display:flex;gap:10px;margin-top:12px}.ghost{flex:1;padding:11px;border:1px solid var(--line);border-radius:12px;
+      color:#d8e2ed;background:rgba(255,255,255,.04);cursor:pointer}
+    .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:26px 0 45px}
+    .fact{padding:19px;border:1px solid var(--line);border-radius:17px;background:rgba(255,255,255,.035)}
+    .fact b{display:block;margin-bottom:7px}.fact p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
+    footer{text-align:center;color:#71859b;font-size:12px;padding:20px 0 38px}
+    @media(max-width:850px){.market{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.catalog{grid-template-columns:repeat(2,1fr)}.facts{grid-template-columns:1fr}}
+    @media(max-width:560px){h1{letter-spacing:-1.8px}.status{display:none}.market{grid-template-columns:1fr 1fr}.panel{padding:14px 4px 4px}
+      .card,.result{padding:18px}.row{grid-template-columns:1fr}.swap{width:100%}.catalog{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <div class="brand"><div class="logo">₺</div>CEYLAN ALTIN</div>
+    <div class="status"><span id="statusDot" class="dot"></span><span id="statusText">Veriler hazırlanıyor</span></div>
+  </nav>
+
+  <section class="hero">
+    <span class="badge">Canlı piyasa verisiyle otomatik hesaplama</span>
+    <h1>Döviz ve altını <span class="grad">tek ekranda</span> hesapla.</h1>
+    <p>Kullanıcıdan gram altın fiyatı istemez. Uluslararası ons altın fiyatını ve USD/TRY referans kurunu otomatik birleştirerek yaklaşık gram altın değerini hesaplar.</p>
+    <div class="market">
+      <div class="ticker"><span>24 Ayar Gram</span><strong id="tickGram">—</strong><small>spot karşılık</small></div>
+      <div class="ticker"><span>Ons Altın</span><strong id="tickOunce">—</strong><small>XAU/USD</small></div>
+      <div class="ticker"><span>Dolar/TL</span><strong id="tickUsd">—</strong><small>referans kur</small></div>
+      <div class="ticker"><span>Veri zamanı</span><strong id="tickTime">—</strong><small id="tickSource">bekleniyor</small></div>
+    </div>
+  </section>
+
+  <main class="app">
+    <div class="tabs">
+      <button class="tab active" data-tab="currency">💱 Döviz Çevirici</button>
+      <button class="tab" data-tab="gold">🪙 Altın Hesaplama</button>
+    </div>
+
+    <section id="currency" class="panel active">
+      <div class="grid">
+        <div class="card">
+          <h2>Döviz hesapla</h2>
+          <p class="intro">Günlük kur verileri üzerinden para birimleri arasında dönüşüm yapın.</p>
+          <div class="field"><label for="fxAmount">Tutar</label><input id="fxAmount" type="number" min="0" step="any" value="100"></div>
+          <div class="row">
+            <div class="field"><label for="fxFrom">Para biriminden</label><select id="fxFrom"></select></div>
+            <button id="swap" class="swap" type="button" aria-label="Para birimlerini değiştir">⇄</button>
+            <div class="field"><label for="fxTo">Para birimine</label><select id="fxTo"></select></div>
+          </div>
+          <button id="fxBtn" class="btn" type="button">Dövizi hesapla</button>
+        </div>
+        <div class="result">
+          <div class="rlabel">Hesaplama sonucu</div>
+          <div id="fxResult" class="rnum">—</div>
+          <div id="fxDetail" class="detail">Güncel veriler alınıyor.</div>
+          <div class="note">Döviz verileri merkez bankası referans kurlarıdır. Banka ve döviz bürosu alış-satış fiyatları farklı olabilir.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="gold" class="panel">
+      <div class="grid">
+        <div class="card">
+          <h2>Altın hesapla</h2>
+          <p class="intro">Gram fiyatı otomatik gelir. Altın türünü ve miktarı seçmeniz yeterlidir.</p>
+          <div class="field"><label for="goldType">Altın türü</label><select id="goldType"></select></div>
+          <div class="field"><label for="goldAmount">Adet / gram miktarı</label><input id="goldAmount" type="number" min="0" step="any" value="1"></div>
+          <button id="goldBtn" class="btn gold" type="button">Altını hesapla</button>
+          <div class="tools">
+            <button id="refreshBtn" class="ghost" type="button">↻ Verileri yenile</button>
+          </div>
+        </div>
+        <div class="result goldbg">
+          <div class="rlabel">Tahmini spot karşılığı</div>
+          <div id="goldResult" class="rnum">—</div>
+          <div id="goldDetail" class="detail">Altın verisi alınıyor.</div>
+          <div class="note">Ziynet ve takı fiyatlarında işçilik, basım maliyeti, kuyumcu marjı ve alış-satış makası bulunur. Bu nedenle sonuç kuyumcu etiket fiyatıyla birebir aynı olmayabilir.</div>
+        </div>
+      </div>
+      <div id="catalog" class="catalog"></div>
+    </section>
+  </main>
+
+  <section class="facts">
+    <div class="fact"><b>Otomatik gram fiyatı</b><p>XAU/USD ons fiyatı, USD/TRY kuru ve 31,1034768 gramlık troy ons dönüşümüyle hesaplanır.</p></div>
+    <div class="fact"><b>Kesintiye dayanıklı</b><p>Canlı servis geçici olarak çalışmazsa tarayıcıdaki son başarılı veri gösterilir ve bunun eski veri olduğu açıkça belirtilir.</p></div>
+    <div class="fact"><b>Şeffaf sonuç</b><p>Altının brüt ağırlığı, saflık oranı, saf altın miktarı ve kullanılan veri tarihi sonuçta gösterilir.</p></div>
+  </section>
+  <footer>© 2026 CEYLAN ALTIN • Bilgilendirme amaçlıdır, yatırım tavsiyesi değildir.</footer>
+</div>
+
+<script>
+"use strict";
+
+const OUNCE_GRAMS = 31.1034768;
+const CACHE_KEY = "kuraltin_market_cache_v2";
+const CACHE_MAX_AGE = 24 * 60 * 60 * 1000;
+
+const currencies = {
+  TRY:"Türk Lirası",USD:"Amerikan Doları",EUR:"Euro",GBP:"İngiliz Sterlini",
+  CHF:"İsviçre Frangı",CAD:"Kanada Doları",AUD:"Avustralya Doları",JPY:"Japon Yeni",
+  SEK:"İsveç Kronu",NOK:"Norveç Kronu",DKK:"Danimarka Kronu",PLN:"Polonya Zlotisi"
+};
+
+const goldTypes = [
+  {id:"gram24",name:"24 Ayar Gram Altın",gross:1,purity:1,unit:"gram"},
+  {id:"gram22",name:"22 Ayar Gram Altın",gross:1,purity:22/24,unit:"gram"},
+  {id:"gram18",name:"18 Ayar Gram Altın",gross:1,purity:18/24,unit:"gram"},
+  {id:"gram14",name:"14 Ayar Gram Altın",gross:1,purity:14/24,unit:"gram"},
+  {id:"bilezik22",name:"22 Ayar Bilezik",gross:1,purity:22/24,unit:"gram"},
+  {id:"ceyrek",name:"Çeyrek Altın",gross:1.754,purity:22/24,unit:"adet"},
+  {id:"yarim",name:"Yarım Altın",gross:3.508,purity:22/24,unit:"adet"},
+  {id:"tam",name:"Tam Ziynet Altın",gross:7.016,purity:22/24,unit:"adet"},
+  {id:"ikibucuk",name:"2,5'luk Ziynet Altın",gross:17.54,purity:22/24,unit:"adet"},
+  {id:"gremse",name:"Gremse Altın",gross:17.54,purity:22/24,unit:"adet"},
+  {id:"ata",name:"Ata / Cumhuriyet Altını",gross:7.216,purity:22/24,unit:"adet"},
+  {id:"ata5",name:"5'li Ata Altın",gross:36.08,purity:22/24,unit:"adet"},
+  {id:"resat",name:"Reşat Altını",gross:7.216,purity:22/24,unit:"adet"},
+  {id:"hamit",name:"Hamit Altını",gross:7.216,purity:22/24,unit:"adet"},
+  {id:"ons",name:"Ons Altın",gross:OUNCE_GRAMS,purity:1,unit:"ons"}
+];
+
+const $ = id => document.getElementById(id);
+let market = null;
+let fxRates = null;
+
+function fmt(value,digits=4){
+  return new Intl.NumberFormat("tr-TR",{maximumFractionDigits:digits}).format(value);
+}
+function money(value,currency="TRY"){
+  return new Intl.NumberFormat("tr-TR",{style:"currency",currency,maximumFractionDigits:currency==="JPY"?0:4}).format(value);
+}
+function safeNumber(value){
+  const n=Number(value); return Number.isFinite(n)&&n>0?n:null;
+}
+function setStatus(text,type="ok"){
+  $("statusText").textContent=text;
+  $("statusDot").className="dot"+(type==="warn"?" warn":type==="bad"?" bad":"");
+}
+async function fetchJSON(url,timeout=9000){
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),timeout);
+  try{
+    const res=await fetch(url,{signal:controller.signal,cache:"no-store"});
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    return await res.json();
+  } finally { clearTimeout(timer); }
+}
+function readCache(){
+  try{
+    const cached=JSON.parse(localStorage.getItem(CACHE_KEY));
+    if(!cached||!cached.savedAt||Date.now()-cached.savedAt>CACHE_MAX_AGE)return null;
+    return cached;
+  }catch{return null}
+}
+function saveCache(data){
+  try{localStorage.setItem(CACHE_KEY,JSON.stringify({...data,savedAt:Date.now()}));}catch{}
+}
+
+async function loadMarketData(force=false){
+  setStatus("Canlı veriler alınıyor","warn");
+  $("refreshBtn").disabled=true;
+  try{
+    const [goldData,fxData]=await Promise.all([
+      fetchJSON("https://api.gold-api.com/price/XAU"),
+      fetchJSON("https://api.frankfurter.dev/v1/latest?base=USD")
+    ]);
+
+    const ounceUSD=safeNumber(goldData.price);
+    const usdTry=safeNumber(fxData.rates?.TRY);
+    if(!ounceUSD||!usdTry) throw new Error("Eksik piyasa verisi");
+
+    fxRates={USD:1,...fxData.rates};
+    market={
+      ounceUSD,usdTry,gram24TRY:(ounceUSD*usdTry)/OUNCE_GRAMS,
+      fxDate:fxData.date||"",goldTime:goldData.updatedAt||goldData.updated_at||"",
+      cached:false
+    };
+    saveCache({market,fxRates});
+    setStatus("Canlı veriler güncel","ok");
+  }catch(error){
+    const cached=readCache();
+    if(cached?.market&&cached?.fxRates){
+      market={...cached.market,cached:true};
+      fxRates=cached.fxRates;
+      setStatus("Son kayıtlı veri kullanılıyor","warn");
+    }else{
+      market=null;fxRates=null;
+      setStatus("Veri servislerine ulaşılamadı","bad");
+    }
+  }finally{
+    $("refreshBtn").disabled=false;
+    updateTickers();
+    calculateCurrency();
+    calculateGold();
+  }
+}
+
+function updateTickers(){
+  if(!market){
+    ["tickGram","tickOunce","tickUsd"].forEach(id=>$(id).textContent="Veri yok");
+    $("tickTime").textContent="—";$("tickSource").textContent="yenilemeyi deneyin";return;
+  }
+  $("tickGram").textContent=money(market.gram24TRY);
+  $("tickOunce").textContent=money(market.ounceUSD,"USD");
+  $("tickUsd").textContent=money(market.usdTry);
+  $("tickTime").textContent=market.fxDate||new Date().toLocaleDateString("tr-TR");
+  $("tickSource").textContent=market.cached?"son kayıtlı veri":"canlı + referans veri";
+}
+
+function loadControls(){
+  const options=Object.entries(currencies).map(([code,name])=>`<option value="${code}">${name} (${code})</option>`).join("");
+  $("fxFrom").innerHTML=options;$("fxTo").innerHTML=options;
+  $("fxFrom").value="USD";$("fxTo").value="TRY";
+  $("goldType").innerHTML=goldTypes.map(g=>`<option value="${g.id}">${g.name}</option>`).join("");
+  $("catalog").innerHTML=goldTypes.map(g=>`
+    <article class="item" data-id="${g.id}">
+      <b>${g.name}</b>
+      <span>${fmt(g.gross,4)} gr brüt • ${fmt(g.gross*g.purity,4)} gr saf altın</span>
+    </article>`).join("");
+  document.querySelectorAll(".item").forEach(el=>el.onclick=()=>{
+    $("goldType").value=el.dataset.id;calculateGold();
+    document.querySelector(".tabs").scrollIntoView({behavior:"smooth",block:"start"});
+  });
+}
+
+function getCrossRate(from,to){
+  if(from===to)return 1;
+  if(!fxRates)return null;
+  const usdToFrom=from==="USD"?1:fxRates[from];
+  const usdToTo=to==="USD"?1:fxRates[to];
+  if(!usdToFrom||!usdToTo)return null;
+  return usdToTo/usdToFrom;
+}
+
+function calculateCurrency(){
+  const amount=safeNumber($("fxAmount").value),from=$("fxFrom").value,to=$("fxTo").value;
+  if(!amount){$("fxResult").textContent="Geçersiz tutar";$("fxDetail").textContent="Sıfırdan büyük bir tutar girin.";return}
+  const rate=getCrossRate(from,to);
+  if(!rate){$("fxResult").textContent="Veri alınamadı";$("fxDetail").textContent="Kur servisine ulaşılamadı. Verileri yenilemeyi deneyin.";return}
+  const result=amount*rate;
+  $("fxResult").textContent=money(result,to);
+  $("fxDetail").innerHTML=`${fmt(amount)} ${from} × ${fmt(rate,6)} = ${fmt(result,4)} ${to}<br>Kur tarihi: ${market?.fxDate||"son kayıtlı veri"}${market?.cached?" • Önbellekten gösteriliyor":""}`;
+}
+
+function calculateGold(){
+  const amount=safeNumber($("goldAmount").value);
+  const type=goldTypes.find(g=>g.id===$("goldType").value);
+  if(!amount){$("goldResult").textContent="Geçersiz miktar";$("goldDetail").textContent="Sıfırdan büyük bir miktar girin.";return}
+  if(!market){$("goldResult").textContent="Veri alınamadı";$("goldDetail").textContent="Altın ve döviz servislerine ulaşılamadı. Verileri yenilemeyi deneyin.";return}
+  const finePerUnit=type.gross*type.purity,totalFine=finePerUnit*amount,value=totalFine*market.gram24TRY;
+  $("goldResult").textContent=money(value);
+  $("goldDetail").innerHTML=
+    `<strong>${fmt(amount)} ${type.unit} ${type.name}</strong><br>`+
+    `Birim brüt ağırlık: ${fmt(type.gross,4)} gr<br>`+
+    `Saflık: %${fmt(type.purity*100,2)} • Birim saf altın: ${fmt(finePerUnit,4)} gr<br>`+
+    `Toplam saf altın: ${fmt(totalFine,4)} gr<br>`+
+    `Hesaplanan 24 ayar gram spot değeri: ${money(market.gram24TRY)}<br>`+
+    `Ons: ${money(market.ounceUSD,"USD")} • USD/TRY: ${fmt(market.usdTry,4)}${market.cached?"<br><strong>Not:</strong> Son kayıtlı veri kullanılıyor.":""}`;
+}
+
+document.querySelectorAll(".tab").forEach(tab=>tab.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));
+  tab.classList.add("active");$(tab.dataset.tab).classList.add("active");
+});
+$("swap").onclick=()=>{const x=$("fxFrom").value;$("fxFrom").value=$("fxTo").value;$("fxTo").value=x;calculateCurrency()};
+$("fxBtn").onclick=calculateCurrency;$("goldBtn").onclick=calculateGold;$("refreshBtn").onclick=()=>loadMarketData(true);
+["fxAmount","fxFrom","fxTo"].forEach(id=>$(id).addEventListener("input",calculateCurrency));
+["goldAmount","goldType"].forEach(id=>$(id).addEventListener("input",calculateGold));
+
+loadControls();
+loadMarketData();
+</script>
+</body>
+</html>
